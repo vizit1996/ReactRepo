@@ -1,76 +1,32 @@
-import React , {useState, useEffect, useCallback} from 'react';
-
-import MoviesList from './components/MoviesList';
+import React from 'react';
+import { BrowserRouter, Route , Switch } from 'react-router-dom';
+import Dashboard from './Dashboard/Dashboard';
 import './App.css';
+import Login from './components/Login/Login';
+import useToken from './components/App/useToken';
 
 function App() {
-  const [movies , setMovies ] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error , setError] = useState(null);
+  const {token, setToken} = useToken();
 
-
-
-  const fetchMoviesHandler = useCallback( async() => {
-    setIsLoading(true);
-    setError(null);
-
-    try{
-      const responce = await fetch('https://swapi.dev/api/films/');
-      
-      if(!responce.ok){
-        throw new Error('something went wrong!');
-
-      }
-      const data = await responce.json();
-      const transformedData = data.results.map(moviesData => {
-        return{
-          id : moviesData.episode_id,
-          title : moviesData.title,
-          openingText : moviesData.opening_crawl,
-          releaseDate : moviesData.release_date
-        }
-      }
-  
-      )
-      setMovies(transformedData);
-      setIsLoading(false);
-
-    } catch(error){
-      setError(error.message);
-    }
-    setIsLoading(false);
-  });  
-
-  useEffect(() => {
-    fetchMoviesHandler();  
-  },[fetchMoviesHandler]);
-
-  let content = <p>Please click the fetch button </p>;
-
-  if (movies.length>0){
-    content = <MoviesList movies={movies} />;
-  }
-
-  if (error){
-    content = <p>{error}</p>;
-  }
-
-  if (movies.length === 0){
-    content = <p>Movie not found</p>;
-  }
-  if(isLoading){
-    content = <p>Loading...</p>;
+  if(!token){
+    return <Login setToken={setToken} />
   }
   
 
-  return (
-    <React.Fragment>
-      <section>
-        <button onClick={fetchMoviesHandler}>Fetch Movies</button>
-      </section>
-      <section>{content}</section>
-    </React.Fragment>
-  );
+  
+
+  return(
+    <div className='wrapper'>
+      <h1>Application</h1>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/dashboard">
+            <Dashboard />
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    </div>
+  ); 
 }
 
 export default App;

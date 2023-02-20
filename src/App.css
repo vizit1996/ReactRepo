@@ -27,4 +27,7 @@ section {
     background-color: #460897;
     border-color: #460897;
   }
+  .wrapper {
+    padding: 20px;
+  }
   
